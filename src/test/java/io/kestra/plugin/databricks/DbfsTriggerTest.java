@@ -174,9 +174,23 @@ class DbfsTriggerTest {
         WorkspaceClient workspace = mock(WorkspaceClient.class);
         DbfsExt dbfs = mock(DbfsExt.class);
 
-        FileInfo first = new FileInfo().setPath("/mnt/events/1.json").setIsDir(false).setModificationTime(1_000L).setFileSize(1L);
-        FileInfo second = new FileInfo().setPath("/mnt/events/2.json").setIsDir(false).setModificationTime(2_000L).setFileSize(2L);
-        FileInfo third = new FileInfo().setPath("/mnt/events/3.json").setIsDir(false).setModificationTime(3_000L).setFileSize(3L);
+        FileInfo first = new FileInfo()
+            .setPath("/mnt/events/1.json")
+            .setIsDir(false)
+            .setModificationTime(1_000L)
+            .setFileSize(1L);
+
+        FileInfo second = new FileInfo()
+            .setPath("/mnt/events/2.json")
+            .setIsDir(false)
+            .setModificationTime(2_000L)
+            .setFileSize(2L);
+
+        FileInfo third = new FileInfo()
+            .setPath("/mnt/events/3.json")
+            .setIsDir(false)
+            .setModificationTime(3_000L)
+            .setFileSize(3L);
 
         when(workspace.dbfs()).thenReturn(dbfs);
         when(dbfs.list("/mnt/events")).thenReturn(List.of(first, second, third));
