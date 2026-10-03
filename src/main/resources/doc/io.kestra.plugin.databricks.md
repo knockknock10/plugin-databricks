@@ -10,6 +10,8 @@ Set `host` to your Databricks workspace URL and configure `authentication` with 
 
 dbfs.Trigger polls a DBFS path and detects newly discovered or changed files. Set from to an absolute DBFS path. Recursive scanning is enabled by default, and directory entries are included by default so partition directories such as date=2026-10-03 can trigger the flow. Use on: CREATE_OR_UPDATE to also react when a file's size or modification time changes. Detection state is persisted in Kestra namespace KV storage so unchanged paths do not retrigger on every poll. The maxFiles property limits how many detected entries are emitted per evaluation.
 
+DBFS root and DBFS mounts are legacy Databricks features. For new Databricks deployments, prefer Unity Catalog volumes or external locations and Databricks' native file-arrival triggers where applicable. This trigger is intended for existing workflows that still need to monitor DBFS paths.
+
 Example:
 
 ```yaml
