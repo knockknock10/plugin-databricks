@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @KestraTest
-class TriggerTest {
+class DbfsTriggerTest {
     @Inject
     private RunContextFactory runContextFactory;
 
@@ -167,6 +167,50 @@ class TriggerTest {
 
         assertThat(files, hasSize(1));
         assertThat(files.get(0).getFile().getPath(), is("/mnt/events/data.json"));
+    }
+
+    @Test
+    void maxFilesDefersUnemittedEntriesToTheNextPoll() throws Exception {
+        WorkspaceClient workspace = mock(WorkspaceClient.class);
+        DbfsExt dbfs = mock(DbfsExt.class);
+
+        FileInfo first = new FileInfo().setPath("/mnt/events/1.json").setIsDir(false).setModificationTime(1_000L).setFileSize(1L);
+        FileInfo second = new FileInfo().setPath("/mnt/events/2.json").setIsDir(false).setModificationTime(2_000L).setFileSize(2L);
+        FileInfo third = new FileInfo().setPath("/mnt/events/3.json").setIsDir(false).setModificationTime(3_000L).setFileSize(3L);
+
+        when(workspace.dbfs()).thenReturn(dbfs);
+        when(dbfs.list("/mnt/events")).thenReturn(List.of(first, second, third));
+
+        Trigger trigger = Trigger.builder()
+            .id("dbfs-max-files")
+            .type(Trigger.class.getName())
+            .from(Property.ofValue("/mnt/events"))
+            .recursive(Property.ofValue(false))
+            .includeDirectories(Property.ofValue(false))
+            .maxFiles(Property.ofValue(2))
+            .build();
+
+        doReturn(workspace).when(trigger).workspaceClient(org.mockito.ArgumentMatchers.any());
+
+        Map.Entry<ConditionContext, io.kestra.core.models.triggers.TriggerState> context =
+            TestsUtils.mockTrigger(runContextFactory, trigger);
+
+        Optional<Execution> firstExecution = trigger.evaluate(context.getKey(), context.getValue());
+        assertThat(firstExecution.isPresent(), is(true));
+
+        @SuppressWarnings("unchecked")
+        List<Trigger.TriggeredFile> firstBatch =
+            (List<Trigger.TriggeredFile>) firstExecution.get().getTrigger().getVariables().get("files");
+        assertThat(firstBatch, hasSize(2));
+
+        Optional<Execution> secondExecution = trigger.evaluate(context.getKey(), context.getValue());
+        assertThat(secondExecution.isPresent(), is(true));
+
+        @SuppressWarnings("unchecked")
+        List<Trigger.TriggeredFile> secondBatch =
+            (List<Trigger.TriggeredFile>) secondExecution.get().getTrigger().getVariables().get("files");
+        assertThat(secondBatch, hasSize(1));
+        assertThat(secondBatch.get(0).getFile().getPath(), is("/mnt/events/3.json"));
     }
 
     @Test
