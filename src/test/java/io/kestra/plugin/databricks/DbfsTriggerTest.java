@@ -1,8 +1,5 @@
 package io.kestra.plugin.databricks;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
