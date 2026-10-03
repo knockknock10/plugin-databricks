@@ -49,17 +49,17 @@ public abstract class AbstractDatabricksTrigger extends AbstractTrigger {
             .setConfigFile(runContext.render(configFile).as(String.class).orElse(null));
 
         if (authentication != null) {
-            cfg.setAuthType(runContext.render(authentication.authType).as(String.class).orElse(null))
-                .setToken(runContext.render(authentication.token).as(String.class).orElse(null))
-                .setUsername(runContext.render(authentication.username).as(String.class).orElse(null))
-                .setPassword(runContext.render(authentication.password).as(String.class).orElse(null))
-                .setClientId(runContext.render(authentication.clientId).as(String.class).orElse(null))
-                .setClientSecret(runContext.render(authentication.clientSecret).as(String.class).orElse(null))
-                .setGoogleCredentials(runContext.render(authentication.googleCredentials).as(String.class).orElse(null))
-                .setGoogleServiceAccount(runContext.render(authentication.googleServiceAccount).as(String.class).orElse(null))
-                .setAzureClientId(runContext.render(authentication.azureClientId).as(String.class).orElse(null))
-                .setAzureClientSecret(runContext.render(authentication.azureClientSecret).as(String.class).orElse(null))
-                .setAzureTenantId(runContext.render(authentication.azureTenantId).as(String.class).orElse(null));
+            cfg.setAuthType(runContext.render(authentication.getAuthType()).as(String.class).orElse(null))
+                .setToken(runContext.render(authentication.getToken()).as(String.class).orElse(null))
+                .setUsername(runContext.render(authentication.getUsername()).as(String.class).orElse(null))
+                .setPassword(runContext.render(authentication.getPassword()).as(String.class).orElse(null))
+                .setClientId(runContext.render(authentication.getClientId()).as(String.class).orElse(null))
+                .setClientSecret(runContext.render(authentication.getClientSecret()).as(String.class).orElse(null))
+                .setGoogleCredentials(runContext.render(authentication.getGoogleCredentials()).as(String.class).orElse(null))
+                .setGoogleServiceAccount(runContext.render(authentication.getGoogleServiceAccount()).as(String.class).orElse(null))
+                .setAzureClientId(runContext.render(authentication.getAzureClientId()).as(String.class).orElse(null))
+                .setAzureClientSecret(runContext.render(authentication.getAzureClientSecret()).as(String.class).orElse(null))
+                .setAzureTenantId(runContext.render(authentication.getAzureTenantId()).as(String.class).orElse(null));
         }
 
         ConfigLoader.resolve(cfg);
