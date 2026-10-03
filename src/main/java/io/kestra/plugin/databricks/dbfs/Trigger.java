@@ -16,14 +16,13 @@ import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.conditions.ConditionContext;
 import io.kestra.core.models.executions.Execution;
 import io.kestra.core.models.property.Property;
-import io.kestra.core.models.triggers.AbstractTrigger;
 import io.kestra.core.models.triggers.PollingTriggerInterface;
 import io.kestra.core.models.triggers.StatefulTriggerInterface;
 import io.kestra.core.models.triggers.TriggerContext;
 import io.kestra.core.models.triggers.TriggerOutput;
 import io.kestra.core.models.triggers.TriggerService;
 import io.kestra.core.runners.RunContext;
-import io.kestra.plugin.databricks.AbstractTask;
+import io.kestra.plugin.databricks.AbstractDatabricksTrigger;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -73,7 +72,7 @@ import static io.kestra.core.models.triggers.StatefulTriggerService.writeState;
         )
     }
 )
-public class Trigger extends AbstractTask implements PollingTriggerInterface, TriggerOutput<Trigger.Output>, StatefulTriggerInterface {
+public class Trigger extends AbstractDatabricksTrigger implements PollingTriggerInterface, TriggerOutput<Trigger.Output>, StatefulTriggerInterface {
     @Builder.Default
     private final Duration interval = Duration.ofSeconds(60);
 
