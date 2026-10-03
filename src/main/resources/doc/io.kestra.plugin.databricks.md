@@ -6,6 +6,26 @@ Run jobs, manage clusters, execute SQL, ask Genie, and move files on Databricks 
 
 Set `host` to your Databricks workspace URL and configure `authentication` with the appropriate credential type. For personal access token auth, set `authentication.token`. For OAuth M2M, set `authentication.clientId` and `authentication.clientSecret`. For Azure-hosted workspaces, use `authentication.azureClientId`, `authentication.azureClientSecret`, and `authentication.azureTenantId`. Alternatively, point `configFile` to a Databricks CLI configuration file. Store all secrets in [secrets](https://kestra.io/docs/concepts/secret) and set connection properties on each task.
 
+## Triggers
+
+dbfs.Trigger polls a DBFS path and detects newly discovered or changed files. Set from to an absolute DBFS path. Recursive scanning is enabled by default, and directory entries are included by default so partition directories such as date=2026-10-03 can trigger the flow. Use on: CREATE_OR_UPDATE to also react when a file's size or modification time changes. Detection state is persisted in Kestra namespace KV storage so unchanged paths do not retrigger on every poll. The maxFiles property limits how many detected entries are emitted per evaluation.
+
+Example:
+
+```yaml
+triggers:
+  - id: dbfs_watch
+    type: io.kestra.plugin.databricks.dbfs.Trigger
+    interval: PT1M
+    host: "{{ secret('DATABRICKS_HOST') }}"
+    authentication:
+      token: "{{ secret('DATABRICKS_TOKEN') }}"
+    from: /mnt/incoming
+    recursive: true
+    includeDirectories: true
+    on: CREATE
+```
+
 ## Tasks
 
 `job.CreateJob` creates a Databricks job — set `jobName` and `jobTasks` (a list of task settings). `job.SubmitRun` submits a one-off run without creating a persistent job — set `runName` and `runTasks`. Both accept `waitForCompletion` to block until the run finishes. Each task entry supports multiple execution types: `NotebookTaskSetting` (`notebookPath`), `SparkPythonTaskSetting` (`pythonFile`), `SparkJarTaskSetting` (`jarUri`, `mainClassName`), `PythonWheelTaskSetting`, `PipelineTaskSetting` (`pipelineId`), and `RunJobTaskSetting` (`jobId`); `SqlTaskSetting` (`warehouseId`, `queryId`) and `DbtTaskSetting` (`commands`, `warehouseId`) are available on `CreateJob` only. Attach libraries to any task via a `libraries` list (JAR, PyPI, Maven, CRAN, wheel, or egg).
